@@ -1,6 +1,6 @@
 
-let timerVideo = 0
 const socket = io();
+let timerVideo = 0
 const statusDiv = document.getElementById('status');
 document.getElementById('playBtn').onclick = () => {
     socket.emit('sync-event', { type: 'play' });
@@ -93,6 +93,25 @@ function formatTime(seconds) {
 
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
+
+document.getElementById('joinBtn').onclick = () => {
+    const nameRoom = document.getElementById('nameRoom').value
+    if (nameRoom.length === 0 || !nameRoom.trim()) {
+        alert('Введите название комнаты');
+        return;
+    }
+    socket.emit('join-room', nameRoom);
+    nameRoom.value = ''
+}
+let currentRoom = null;
+let isLeader = false;
+socket.on('room-joined', (data) => {
+    currentRoom = data.roomName
+    isLeader = (data.role === 'leader')
+    document.getElementById('roomDisplay').textContent = data.roomName;
+    document.getElementById('roleDisplay').textContent = isLeader ? '👑 Ведущий' : '👀 Зритель';
+})
+
 socket.on('connect', () => {
     statusDiv.textContent = 'Подключено! ID: ' + socket.id;
 });

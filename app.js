@@ -9,7 +9,6 @@ const io = new Server(server);
 app.use(express.static(path.join(__dirname, 'public')))
 
 io.on('connection', (socket) => {
-    socket.join("some room");
     console.log('Пользователь подключился:', socket.id);
     socket.on('sync-event', (data) => {
         socket.broadcast.emit('sync-event', data);
@@ -17,7 +16,17 @@ io.on('connection', (socket) => {
     socket.on('my-time', (data) => {
         socket.broadcast.emit('remote-time', data);
     });
-});
+    socket.on('join-room', (roomName) => {
+        socket.join(roomName);
+        socket.currentRoom = roomName;
+        const clients = io.sockets.adapter.rooms.get(roomName);
+        const isLeader = clients ? clients.size === 1 : true;
+        socket.emit('room-joined', {
+            roomName: roomName,
+            role: isLeader ? 'leader' : 'follower'
+        });
+    });
+})
 
 
 
