@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>SyncRutube</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Синхронизация видео</h1>
+        <span>
+            Код комнаты:
+            <input type="text">
+            <button id="joinBtn">
+                Войти
+            </button>
+            <div>Вы в комнате</div>
+            <div id="role"></div>
+            <div class="stats">
+                <div id="remoteTime"></div>
+                <div id="myTime"></div>
+            </div>
+        </span>
+        <input type="text" id="videoUrl" placeholder="Введите ссылку на видео Rutube"
+            style="width: 70%; padding: 10px;">
+        <button id="loadVideoBtn">Загрузить видео</button>
+        <div class="video-wrapper">
+            <iframe width="720" height="405" style="border: none;" allow="clipboard-write; autoplay; fullscreen"
+                allowfullscreen="true" webkitAllowFullScreen="true" mozallowfullscreen="true" id="rutube-player">
+            </iframe>
+        </div>
+        <div class="controls">
+            <button id="playBtn">▶ Play</button>
+            <button id="stopBtn">⏸ Pause</button>
+            <button id="syncBtn">🔄 Sync</button>
+        </div>
+        <div class="status-container">
+            <div id="status">Подключение...</div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/client.js"></script>
+</body>
+
+</html>
