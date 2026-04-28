@@ -30,11 +30,10 @@ document.getElementById('save-btn').onclick = () => {
         alert('Введите название комнаты');
         return;
     }
+
     socket.emit('join-room', nameRoom);
     document.getElementById('modal-room').value = ''
 };
-
-
 
 document.getElementById('stopBtn').onclick = () => {
     isPlaying = false
@@ -53,6 +52,13 @@ document.getElementById('syncBtn').onclick = () => {
         JSON.stringify({ type: "player:setCurrentTime", data: { time: timerVideo + 0.5 } }),
         "*"
     );
+}
+
+document.getElementById('chatSend').onclick = () => {
+    const inputChat = document.getElementById('chatInput').value;
+    if (!inputChat || inputChat.trim().length <= 0) return
+    socket.emit('chat-message', inputChat);
+    document.getElementById('chatInput').value = '';
 }
 
 socket.on('sync-event', (data) => {
@@ -114,10 +120,10 @@ setInterval(() => {
     socket.emit('my-time', { currentTime: timerVideo });
 }, 2000);
 
-socket.on('remote-time', (data) => {
-    document.getElementById('remoteTime').textContent = `Время партнера ${formatTime(data.currentTime)}`;
-    document.getElementById('myTime').textContent = `Мое время ${formatTime(timerVideo)}`
-});
+// socket.on('remote-time', (data) => {
+//     document.getElementById('remoteTime').textContent = `Время партнера ${formatTime(data.currentTime)}`;
+//     document.getElementById('myTime').textContent = `Мое время ${formatTime(timerVideo)}`
+// });
 
 function formatTime(seconds) {
     if (isNaN(seconds)) return '00:00';
@@ -135,11 +141,33 @@ socket.on('room-joined', (data) => {
     document.getElementById('room-code').textContent = data.roomName;
     document.getElementById('role').textContent = isLeader ? '👑 Ведущий' : '👀 Зритель';
     document.getElementById('online-users').textContent = data.size
+    document.getElementById('roomCode').textContent = data.roomName
     autoSync(isLeader, isPlaying);
 })
+
 socket.on('online-update', (data) => {
     document.getElementById('online-users').textContent = data.size;
+    document.getElementById('onlineCount').textContent = data.size;
 });
+
+
+socket.on('chat-message', (data) => {
+    const { message, name, time } = data;
+    const container = document.getElementById('chatMessages');
+    const input = document.getElementById('chat-input')
+    const messageItem = document.createElement('div');
+    messageItem.className = 'message';
+    messageItem.innerHTML = `
+           <div class="avatar"></div>
+           <div>
+               <span class="user">${name}</span>
+               <span class="text">${message}</span>
+           </div>
+           <span class="time">${time}</span>
+    `
+    container.appendChild(messageItem)
+})
+
 socket.off('users-list');
 socket.on('users-list', (users) => {
     const container = document.getElementById('users-list');
@@ -165,6 +193,8 @@ socket.on('users-list', (users) => {
         header.textContent = `Участники: ${users.length}`;
     }
 });
+
+
 function autoSync(isLeader, isPlaying) {
     if (syncInterval !== null) {
         clearInterval(syncInterval);
@@ -177,9 +207,7 @@ function autoSync(isLeader, isPlaying) {
         }, 5000)
     }
 }
-socket.on('online-update', (data) => {
-    document.getElementById('online-users').textContent = data.size;
-});
+
 socket.on('sync-time', (data) => {
     const diff = Math.abs(data.time - timerVideo);
     if (diff > 0.5) {
@@ -190,10 +218,6 @@ socket.on('sync-time', (data) => {
         );
     }
 })
-
-
-
-
 
 socket.on('connect', () => {
     // statusDiv.textContent = 'Подключено! ID: ' + socket.id;
