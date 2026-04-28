@@ -15,6 +15,16 @@ document.getElementById('playBtn').onclick = () => {
     );
 };
 
+// modal window
+document.getElementById("ghost-btn").onclick = () => {
+    document.getElementById("modal-overlay").classList.add('active')
+}
+
+document.getElementById('modal-close').onclick = () => {
+    document.getElementById("modal-overlay").classList.remove('active')
+}
+
+
 document.getElementById('stopBtn').onclick = () => {
     isPlaying = false
     autoSync(isLeader, false);

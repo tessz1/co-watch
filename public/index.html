@@ -43,7 +43,7 @@
                 </span>
             </div>
 
-            <button class="ghost-btn">⚙ Настройки комнаты</button>
+            <button id="ghost-btn" class="ghost-btn">⚙ Настройки комнаты</button>
             <button class="danger-btn">⎋ Покинуть комнату</button>
         </div>
         <main class="main-layout">
@@ -126,6 +126,31 @@
                 </div>
             </aside>
         </main>
+    </div>
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="room-modal">
+            <div class="modal-top">
+                <div class="modal-title">
+                    ⚙ Управление комнатой
+                </div>
+                <button id="modal-close" class="modal-close">✕</button>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab active">Комната</button>
+                <button class="tab">Видео</button>
+                <button class="tab">Настройки</button>
+            </div>
+            <div class="modal-content">
+                <label class="modal-label">Код комнаты</label>
+                <input type="text" placeholder="Введите код комнаты">
+                <label class="modal-label">Ссылка Rutube</label>
+                <input type="text" placeholder="https://rutube.ru/video/...">
+                <div class="modal-actions">
+                    <button class="ghost-btn">Создать</button>
+                    <button class="primary-btn">Сохранить</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
