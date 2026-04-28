@@ -61,22 +61,22 @@ socket.on('sync-event', (data) => {
         autoSync(false, false);
     }
 });
-document.getElementById('loadVideoBtn').onclick = () => {
-    let url = document.getElementById('videoUrl').value.trim();
-    if (!url) return;
-    const iframe = document.getElementById('rutube-player');
-    if (url.includes('rutube.ru/video/')) {
-        const match = url.match(/rutube\.ru\/video\/([a-f0-9]+)/);
-        if (match && match[1]) {
-            url = `https://rutube.ru/play/embed/${match[1]}`;
-        }
-    }
-    iframe.src = url;
-    socket.emit('sync-event', { type: 'load-video', url: url });
-    timerVideo = 0;
-    isPlaying = false;
-    autoSync(isLeader, false);
-};
+// document.getElementById('loadVideoBtn').onclick = () => {
+//     let url = document.getElementById('videoUrl').value.trim();
+//     if (!url) return;
+//     const iframe = document.getElementById('rutube-player');
+//     if (url.includes('rutube.ru/video/')) {
+//         const match = url.match(/rutube\.ru\/video\/([a-f0-9]+)/);
+//         if (match && match[1]) {
+//             url = `https://rutube.ru/play/embed/${match[1]}`;
+//         }
+//     }
+//     iframe.src = url;
+//     socket.emit('sync-event', { type: 'load-video', url: url });
+//     timerVideo = 0;
+//     isPlaying = false;
+//     autoSync(isLeader, false);
+// };
 
 
 window.addEventListener("message", function (event) {
@@ -107,15 +107,15 @@ function formatTime(seconds) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
-document.getElementById('joinBtn').onclick = () => {
-    const nameRoom = document.getElementById('nameRoom').value
-    if (nameRoom.length === 0 || !nameRoom.trim()) {
-        alert('Введите название комнаты');
-        return;
-    }
-    socket.emit('join-room', nameRoom);
-    document.getElementById('nameRoom').value = ''
-}
+// document.getElementById('joinBtn').onclick = () => {
+//     const nameRoom = document.getElementById('nameRoom').value
+//     if (nameRoom.length === 0 || !nameRoom.trim()) {
+//         alert('Введите название комнаты');
+//         return;
+//     }
+//     socket.emit('join-room', nameRoom);
+//     document.getElementById('nameRoom').value = ''
+// }
 let currentRoom = null;
 let isLeader = false;
 socket.on('room-joined', (data) => {
@@ -157,7 +157,7 @@ socket.on('sync-time', (data) => {
 
 
 socket.on('connect', () => {
-    statusDiv.textContent = 'Подключено! ID: ' + socket.id;
+    // statusDiv.textContent = 'Подключено! ID: ' + socket.id;
 });
 
 socket.on('disconnect', () => {
