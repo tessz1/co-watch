@@ -21,19 +21,20 @@
         <div class="info-bar">
             <div class="info-item">
                 <span class="info-label">КОМНАТА</span>
-                <span class="info-value room-code">ABC123</span>
+                <span id="room-code" class="info-value room-code">ABC123</span>
             </div>
             <div class="info-item">
                 <span class="info-label">ВЫ</span>
-                <span class="info-value role">
+                <span id="role" class="info-value role">
                     👑 Хост
                 </span>
             </div>
             <div class="info-item">
                 <span class="info-label">ОНЛАЙН</span>
-                <span class="info-value online">
+                <div class="info-value online">
                     <span class="dot green"></span>
-                </span>
+                    <span id="online-users">0</span>
+                </div>
             </div>
             <div class="info-item">
                 <span class="info-label">СТАТУС</span>
@@ -114,14 +115,7 @@
                 <div class="users-card">
                     <div class="users-header">Участники: 2</div>
                     <div class="user-container">
-                        <div class="users-list">
-                            <div class="avatar user-for-list"></div>
-                            <div class="style-users">
-                                <span class="user-list">User</span>
-                                <span class="icon">icon</span>
-                            </div>
-                            <span class="user-state watch">Смотрит</span>
-                        </div>
+                        <div id="users-list" class="users-list"></div>
                     </div>
                 </div>
             </aside>
@@ -142,12 +136,12 @@
             </div>
             <div class="modal-content">
                 <label class="modal-label">Код комнаты</label>
-                <input type="text" placeholder="Введите код комнаты">
+                <input id="modal-room" type="text" placeholder="Введите код комнаты">
                 <label class="modal-label">Ссылка Rutube</label>
-                <input type="text" placeholder="https://rutube.ru/video/...">
+                <input id="modal-link" type="text" placeholder="https://rutube.ru/video/...">
                 <div class="modal-actions">
                     <button class="ghost-btn">Создать</button>
-                    <button class="primary-btn">Сохранить</button>
+                    <button id="save-btn" class="primary-btn">Сохранить</button>
                 </div>
             </div>
         </div>

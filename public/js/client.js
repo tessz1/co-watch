@@ -24,6 +24,17 @@ document.getElementById('modal-close').onclick = () => {
     document.getElementById("modal-overlay").classList.remove('active')
 }
 
+document.getElementById('save-btn').onclick = () => {
+    const nameRoom = document.getElementById('modal-room').value
+    if (nameRoom.length === 0 || !nameRoom.trim()) {
+        alert('Введите название комнаты');
+        return;
+    }
+    socket.emit('join-room', nameRoom);
+    document.getElementById('modal-room').value = ''
+};
+
+
 
 document.getElementById('stopBtn').onclick = () => {
     isPlaying = false
@@ -117,27 +128,43 @@ function formatTime(seconds) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
-// document.getElementById('joinBtn').onclick = () => {
-//     const nameRoom = document.getElementById('nameRoom').value
-//     if (nameRoom.length === 0 || !nameRoom.trim()) {
-//         alert('Введите название комнаты');
-//         return;
-//     }
-//     socket.emit('join-room', nameRoom);
-//     document.getElementById('nameRoom').value = ''
-// }
 let currentRoom = null;
 let isLeader = false;
 socket.on('room-joined', (data) => {
     isLeader = (data.role === 'leader');
-    currentRoom = data.roomName
-    document.getElementById('roomDisplay').textContent = data.roomName;
-    document.getElementById('roleDisplay').textContent = isLeader ? '👑 Ведущий' : '👀 Зритель';
+    document.getElementById('room-code').textContent = data.roomName;
+    document.getElementById('role').textContent = isLeader ? '👑 Ведущий' : '👀 Зритель';
+    document.getElementById('online-users').textContent = data.size
     autoSync(isLeader, isPlaying);
 })
+socket.on('online-update', (data) => {
+    document.getElementById('online-users').textContent = data.size;
+});
+socket.off('users-list');
+socket.on('users-list', (users) => {
+    const container = document.getElementById('users-list');
+    container.innerHTML = '';
 
+    users.forEach(user => {
+        const userItem = document.createElement('div');
+        userItem.className = 'user-item';
 
+        userItem.innerHTML = `
+            <div class="avatar user-for-list"></div>
+            <div class="style-users">
+                <span class="user-list">${user.name}</span>
+            </div>
+            <span class="user-state watch">Смотрит</span>
+        `;
 
+        container.appendChild(userItem);
+    });
+
+    const header = document.querySelector('.users-header');
+    if (header) {
+        header.textContent = `Участники: ${users.length}`;
+    }
+});
 function autoSync(isLeader, isPlaying) {
     if (syncInterval !== null) {
         clearInterval(syncInterval);
@@ -150,7 +177,9 @@ function autoSync(isLeader, isPlaying) {
         }, 5000)
     }
 }
-
+socket.on('online-update', (data) => {
+    document.getElementById('online-users').textContent = data.size;
+});
 socket.on('sync-time', (data) => {
     const diff = Math.abs(data.time - timerVideo);
     if (diff > 0.5) {
