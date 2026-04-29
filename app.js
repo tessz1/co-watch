@@ -29,7 +29,6 @@ function getRoomUsers(roomName) {
             });
         }
     }
-
     return resultArray;
 }
 function updateRoom(roomName) {
@@ -113,6 +112,14 @@ io.on('connection', (socket) => {
             io.to(socket.currentRoom).emit('chat-message', resultMessage);
         }
     });
+    socket.on('exitRoom', () => {
+        if (!mapUsers.has(socket.id)) return
+        mapUsers.delete(socket.id)
+        socket.leave(socket.currentRoom)
+        updateRoom(socket.currentRoom)
+        socket.currentRoom = ''
+        socket.emit('exitRoom')
+    })
 
 });
 server.listen(3333, () => {

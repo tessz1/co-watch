@@ -21,12 +21,12 @@
         <div class="info-bar">
             <div class="info-item">
                 <span class="info-label">КОМНАТА</span>
-                <span id="room-code" class="info-value room-code">ABC123</span>
+                <span id="room-code" class="info-value room-code">— — —</span>
             </div>
             <div class="info-item">
                 <span class="info-label">ВЫ</span>
                 <span id="role" class="info-value role">
-                    👑 Хост
+                    Вне комнаты
                 </span>
             </div>
             <div class="info-item">
@@ -40,12 +40,12 @@
                 <span class="info-label">СТАТУС</span>
                 <span class="info-value sync">
                     <span class="bars"></span>
-                    Синхронизировано
+                    Ожидание комнаты
                 </span>
             </div>
 
             <button id="ghost-btn" class="ghost-btn">⚙ Настройки комнаты</button>
-            <button class="danger-btn">⎋ Покинуть комнату</button>
+            <button id="danger-btn" class="danger-btn">⎋ Покинуть комнату</button>
         </div>
         <main class="main-layout">
             <section class="container">
@@ -79,28 +79,15 @@
                 <div class="stats-room"></div>
             </section>
             <aside class="sidebar">
-                <div class="chat-container">
+                <div id="chatContainer" class="chat-container chat-locked">
                     <div class="chat-header">
                         <span class="icon-emodji-chat">💬</span>
                         Чат
                     </div>
+                    <div id="chat-overlay" class="chat-overlay overlay-locked">
+                        💬 Войдите в комнату, чтобы открыть чат
+                    </div>
                     <div class="chat-messages" id="chatMessages">
-                        <div class="message">
-                            <div class="avatar"></div>
-                            <div>
-                                <span class="user">Alice</span>
-                                <span class="text">Привет 👋</span>
-                            </div>
-                            <span class="time">20:15</span>
-                        </div>
-                        <div class="message">
-                            <div class="avatar"></div>
-                            <div>
-                                <span class="user">User</span>
-                                <span class="text">Готов смотреть</span>
-                            </div>
-                            <span class="time">20:15</span>
-                        </div>
                     </div>
                     <div id="chat-input" class="chat-input">
                         <input type="text" id="chatInput" placeholder="Написать сообщение...">

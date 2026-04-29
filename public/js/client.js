@@ -15,6 +15,37 @@ document.getElementById('playBtn').onclick = () => {
     );
 };
 
+document.getElementById('danger-btn').onclick = () => {
+    socket.emit('exitRoom')
+}
+
+socket.on('exitRoom', () => {
+    document.getElementById('room-code').textContent = '— — —';
+    document.getElementById('role').textContent = 'Вне комнаты';
+    document.getElementById('online-users').textContent = '0'
+    document.getElementById('roomCode').textContent = 'Вне комнаты'
+    const chat = document.getElementById('chatContainer');
+    chat.classList.remove('unlocked')
+    chat.classList.add('chat-locked');
+    document.querySelectorAll('.user-item').forEach(el => el.remove());
+    document.getElementById('chat-overlay').classList.add('overlay-locked');
+    const chatMessages = document.getElementById('chatMessages');
+    if (chatMessages) chatMessages.innerHTML = '';
+    if (syncInterval) {
+        clearInterval(syncInterval);
+        syncInterval = null;
+    }
+    isPlaying = false;
+    isLeader = false;
+    currentRoom = null;
+    const iframe = document.getElementById('rutube-player');
+    iframe.contentWindow.postMessage(
+        JSON.stringify({ type: "player:pause", data: {} }),
+        "*"
+    );
+})
+
+
 // modal window
 document.getElementById("ghost-btn").onclick = () => {
     document.getElementById("modal-overlay").classList.add('active')
@@ -32,6 +63,13 @@ document.getElementById('save-btn').onclick = () => {
     }
 
     socket.emit('join-room', nameRoom);
+    const chat = document.getElementById('chatContainer');
+    chat.classList.add('unlocked');
+    document.getElementById('chatInput').focus();
+    chat.classList.remove('chat-locked');
+    setTimeout(() => {
+        document.getElementById('chat-overlay').classList.remove('overlay-locked');
+    }, 350);
     document.getElementById('modal-room').value = ''
 };
 

@@ -530,15 +530,12 @@ button:hover {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-
     position: fixed;
     inset: 0;
     z-index: 999;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     background: rgba(0, 0, 0, .62);
     backdrop-filter: blur(10px);
 }
@@ -661,4 +658,52 @@ button:hover {
     .chat-container {
         height: 420px;
     }
+}
+
+/* CHAT LOCKED */
+
+.chat-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.chat-locked .chat-messages,
+.chat-locked .chat-input {
+    filter: blur(4px);
+    opacity: .35;
+    pointer-events: none;
+    transition: .35s ease;
+}
+
+.chat-overlay {}
+
+.chat-overlay.overlay-locked {
+    position: absolute;
+    top: 52px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    z-index: 5;
+    font-weight: 600;
+    color: white;
+    background: rgba(10, 10, 20, .25);
+    backdrop-filter: blur(6px);
+    transition: .35s ease;
+}
+
+.chat-container.unlocked .chat-messages,
+.chat-container.unlocked .chat-input {
+    filter: blur(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.chat-container.unlocked .chat-overlay {
+    opacity: 0;
+    visibility: hidden;
 }
