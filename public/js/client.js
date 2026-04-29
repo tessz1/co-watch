@@ -144,6 +144,42 @@ socket.on('sync-event', (data) => {
 // };
 
 
+document.getElementById('save-btn').onclick = () => {
+    const roomName = document.getElementById('modal-room').value;
+    const videoUrl = document.getElementById('modal-link').value;
+
+    if (roomName && roomName.trim()) {
+        socket.emit('join-room', roomName.trim());
+        const chat = document.getElementById('chatContainer');
+        chat.classList.add('unlocked');
+        chat.classList.remove('chat-locked');
+        setTimeout(() => {
+            document.getElementById('chat-overlay').classList.remove('overlay-locked');
+        }, 350);
+        document.getElementById('modal-room').value = '';
+    }
+    if (videoUrl && videoUrl.trim()) {
+        let url = videoUrl.trim();
+
+        if (url.includes('rutube.ru/video/')) {
+            const match = url.match(/rutube\.ru\/video\/([a-f0-9]+)/);
+            if (match && match[1]) {
+                url = `https://rutube.ru/play/embed/${match[1]}`;
+            }
+        }
+        const iframe = document.getElementById('rutube-player');
+        iframe.src = url;
+        socket.emit('sync-event', { type: 'load-video', url: url });
+        timerVideo = 0;
+        isPlaying = false;
+        autoSync(isLeader, false);
+
+        document.getElementById('modal-link').value = '';
+    }
+    document.getElementById("modal-overlay").classList.remove('active');
+};
+
+
 window.addEventListener("message", function (event) {
     try {
         const message = JSON.parse(event.data)

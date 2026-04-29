@@ -675,9 +675,7 @@ button:hover {
     transition: .35s ease;
 }
 
-.chat-overlay {}
-
-.chat-overlay.overlay-locked {
+.chat-overlay {
     position: absolute;
     top: 52px;
     left: 0;
@@ -691,6 +689,10 @@ button:hover {
     z-index: 5;
     font-weight: 600;
     color: white;
+    background: rgba(10, 10, 20, .25);
+}
+
+.chat-overlay.overlay-locked {
     background: rgba(10, 10, 20, .25);
     backdrop-filter: blur(6px);
     transition: .35s ease;
