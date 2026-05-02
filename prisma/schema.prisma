@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  name String
+  events    Event[]
+  currentTime Float @default(0)
+  isPlaying Boolean @default(false)
+  videoUrl String @default("")
+}
+
+model Event {
+  id        String   @id @default(uuid())
+  type      String
+  time      Float
+  createdAt DateTime @default(now())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+}

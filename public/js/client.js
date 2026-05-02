@@ -2,12 +2,17 @@
 const socket = io();
 let timerVideo = 0
 let syncInterval = null;
+let isLeader = false;
+const roomId = window.location.pathname.split('/').pop();
 let isPlaying = false;
 const statusDiv = document.getElementById('status');
-document.getElementById('playBtn').onclick = () => {
-    socket.emit('sync-event', { type: 'play' });
+
+
+document.getElementById('playBtn').onclick = async () => {
+    socket.emit('sync-event', { roomId, type: 'play', time: timerVideo });
     isPlaying = true;
     autoSync(isLeader, true);
+
     const iframe = document.getElementById('rutube-player');
     iframe.contentWindow.postMessage(
         JSON.stringify({ type: "player:play", data: {} }),
@@ -37,7 +42,6 @@ socket.on('exitRoom', () => {
     }
     isPlaying = false;
     isLeader = false;
-    currentRoom = null;
     const iframe = document.getElementById('rutube-player');
     iframe.contentWindow.postMessage(
         JSON.stringify({ type: "player:pause", data: {} }),
@@ -55,28 +59,10 @@ document.getElementById('modal-close').onclick = () => {
     document.getElementById("modal-overlay").classList.remove('active')
 }
 
-document.getElementById('save-btn').onclick = () => {
-    const nameRoom = document.getElementById('modal-room').value
-    if (nameRoom.length === 0 || !nameRoom.trim()) {
-        alert('Введите название комнаты');
-        return;
-    }
-
-    socket.emit('join-room', nameRoom);
-    const chat = document.getElementById('chatContainer');
-    chat.classList.add('unlocked');
-    document.getElementById('chatInput').focus();
-    chat.classList.remove('chat-locked');
-    setTimeout(() => {
-        document.getElementById('chat-overlay').classList.remove('overlay-locked');
-    }, 350);
-    document.getElementById('modal-room').value = ''
-};
-
 document.getElementById('stopBtn').onclick = () => {
     isPlaying = false
     autoSync(isLeader, false);
-    socket.emit('sync-event', { type: 'pause' })
+    socket.emit('sync-event', { roomId, type: 'pause', time: timerVideo })
     const iframe = document.getElementById('rutube-player');
     iframe.contentWindow.postMessage(
         JSON.stringify({ type: "player:pause", data: {} }),
@@ -84,7 +70,7 @@ document.getElementById('stopBtn').onclick = () => {
     )
 };
 document.getElementById('syncBtn').onclick = () => {
-    socket.emit('sync-event', { type: 'seek', time: timerVideo })
+    socket.emit('sync-event', { roomId, type: 'seek', time: timerVideo })
     const iframe = document.getElementById('rutube-player');
     iframe.contentWindow.postMessage(
         JSON.stringify({ type: "player:setCurrentTime", data: { time: timerVideo + 0.5 } }),
@@ -104,7 +90,7 @@ socket.on('sync-event', (data) => {
         const iframe = document.getElementById('rutube-player');
         iframe.contentWindow.postMessage(JSON.stringify({ type: "player:setCurrentTime", data: { time: data.time } }), "*");
     }
-    if (data.type === 'pause') {
+    if (data === 'pause') {
         const iframe = document.getElementById('rutube-player');
         iframe.contentWindow.postMessage(
             JSON.stringify({ type: "player:pause", data: {} }),
@@ -144,39 +130,38 @@ socket.on('sync-event', (data) => {
 // };
 
 
-document.getElementById('save-btn').onclick = () => {
-    const roomName = document.getElementById('modal-room').value;
-    const videoUrl = document.getElementById('modal-link').value;
+document.getElementById('save-btn').onclick = async () => {
+    await createRoom()
+    // const roomName = document.getElementById('modal-room').value;
+    // const videoUrl = document.getElementById('modal-link').value;
+    // if (roomName && roomName.trim()) {
+    //     const chat = document.getElementById('chatContainer');
+    //     chat.classList.add('unlocked');
+    //     chat.classList.remove('chat-locked');
+    //     setTimeout(() => {
+    //         document.getElementById('chat-overlay').classList.remove('overlay-locked');
+    //     }, 350);
+    //     document.getElementById('modal-room').value = '';
+    // }
+    // if (videoUrl && videoUrl.trim()) {
+    //     let url = videoUrl.trim();
 
-    if (roomName && roomName.trim()) {
-        socket.emit('join-room', roomName.trim());
-        const chat = document.getElementById('chatContainer');
-        chat.classList.add('unlocked');
-        chat.classList.remove('chat-locked');
-        setTimeout(() => {
-            document.getElementById('chat-overlay').classList.remove('overlay-locked');
-        }, 350);
-        document.getElementById('modal-room').value = '';
-    }
-    if (videoUrl && videoUrl.trim()) {
-        let url = videoUrl.trim();
+    //     if (url.includes('rutube.ru/video/')) {
+    //         const match = url.match(/rutube\.ru\/video\/([a-f0-9]+)/);
+    //         if (match && match[1]) {
+    //             url = `https://rutube.ru/play/embed/${match[1]}`;
+    //         }
+    //     }
+    //     const iframe = document.getElementById('rutube-player');
+    //     iframe.src = url;
+    //     socket.emit('sync-event', { type: 'load-video', url: url });
+    //     timerVideo = 0;
+    //     isPlaying = false;
+    //     autoSync(isLeader, false);
 
-        if (url.includes('rutube.ru/video/')) {
-            const match = url.match(/rutube\.ru\/video\/([a-f0-9]+)/);
-            if (match && match[1]) {
-                url = `https://rutube.ru/play/embed/${match[1]}`;
-            }
-        }
-        const iframe = document.getElementById('rutube-player');
-        iframe.src = url;
-        socket.emit('sync-event', { type: 'load-video', url: url });
-        timerVideo = 0;
-        isPlaying = false;
-        autoSync(isLeader, false);
-
-        document.getElementById('modal-link').value = '';
-    }
-    document.getElementById("modal-overlay").classList.remove('active');
+    //     document.getElementById('modal-link').value = '';
+    // }
+    // document.getElementById("modal-overlay").classList.remove('active');
 };
 
 
@@ -190,30 +175,19 @@ window.addEventListener("message", function (event) {
 })
 
 
-setInterval(() => {
-    socket.emit('my-time', { currentTime: timerVideo });
-}, 2000);
-
-// socket.on('remote-time', (data) => {
-//     document.getElementById('remoteTime').textContent = `Время партнера ${formatTime(data.currentTime)}`;
-//     document.getElementById('myTime').textContent = `Мое время ${formatTime(timerVideo)}`
-// });
-
 function formatTime(seconds) {
     if (isNaN(seconds)) return '00:00';
 
     const mins = Math.floor(seconds / 60);
-    const secs = Math.ftentloor(seconds % 60);
+    const secs = Math.floor(seconds % 60);
 
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
-let currentRoom = null;
-let isLeader = false;
 socket.on('room-joined', (data) => {
     isLeader = (data.role === 'leader');
-    document.getElementById('room-code').textContent = data.roomName;
-    document.getElementById('role').textCon = isLeader ? '👑 Ведущий' : '👀 Зритель';
+    document.getElementById('room-code').textContent = data.name;
+    document.getElementById('role').textContent = isLeader ? '👑 Ведущий' : '👀 Зритель';
     document.getElementById('online-users').textContent = data.size
     document.getElementById('roomCode').textContent = data.roomName
     autoSync(isLeader, isPlaying);
@@ -277,7 +251,7 @@ function autoSync(isLeader, isPlaying) {
 
     if (isLeader && syncInterval == null && isPlaying) {
         syncInterval = setInterval(() => {
-            socket.emit('sync-time', { type: 'seek', time: timerVideo })
+            socket.emit('sync-time', { roomId, type: 'seek', time: timerVideo, isPlaying })
         }, 5000)
     }
 }
@@ -292,6 +266,33 @@ socket.on('sync-time', (data) => {
         );
     }
 })
+
+
+async function createRoom() {
+    const roomName = document.getElementById('modal-room').value.trim()
+    const res = await fetch('/api/room', {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: roomName
+        })
+
+    })
+    const data = await res.json()
+    window.location = `/room/${data.roomId}`
+}
+
+
+
+async function getRoomName(roomID) {
+    const res = await fetch(`api/room/${roomID}`)
+    const data = await res.json()
+    return data
+}
+
+
 
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -310,7 +311,9 @@ document.querySelectorAll('.tab').forEach(tab => {
 })
 
 socket.on('connect', () => {
-    // statusDiv.textContent = 'Подключено! ID: ' + socket.id;
+    if (roomId) {
+        socket.emit('join-room', roomId)
+    }
 });
 
 socket.on('disconnect', () => {
