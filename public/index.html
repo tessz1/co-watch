@@ -114,7 +114,12 @@
                 <div class="modal-title">
                     ⚙ Управление комнатой
                 </div>
-                <button id="modal-close" class="modal-close">✕</button>
+                <button id="modal-close" class="modal-close" style="border: none; cursor: pointer; padding: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 32 32" fill="#333333" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396 0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038 0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038 0-1.435l6.097-6.096-6.097-6.097c-0.396-0.396-0.396-1.039 0-1.435l2.153-2.151c0.396-0.396 1.038-0.396 1.434 0l6.096 6.097 6.097-6.097c0.396-0.396 1.038-0.396 1.435 0l2.151 2.152c0.396 0.396 0.396 1.038 0 1.435l-6.096 6.096z" />
+                    </svg>
+                </button>
             </div>
             <div class="modal-tabs">
                 <button class="tab active">Комната</button>
@@ -122,10 +127,33 @@
                 <button class="tab">Настройки</button>
             </div>
             <div class="modal-content">
-                <label class="modal-label">Код комнаты</label>
-                <input id="modal-room" type="text" placeholder="Введите код комнаты">
-                <label class="modal-label">Ссылка Rutube</label>
-                <input id="modal-link" type="text" placeholder="https://rutube.ru/video/...">
+                <div id="tab-room" class="tab-content active">
+                    <label class="modal-label">Код комнаты</label>
+                    <input id="modal-room" type="text" placeholder="Введите код комнаты">
+                </div>
+                <div id="tab-video" class="tab-content">
+                    <label class="modal-label">Ссылка Rutube</label>
+                    <input id="modal-link" type="text" placeholder="https://rutube.ru/video/...">
+                </div>
+                <div id="tab-settings" class="tab-content">
+                    <label class="modal-label">Качество видео</label>
+                    <select id="video-quality"
+                        style="width:100%;height:46px;padding:0 16px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:#9B6BFF;">
+                        <option>Авто</option>
+                        <option>1080p</option>
+                        <option>720p</option>
+                        <option>480p</option>
+                    </select>
+                    <label class="modal-label">Синхронизация</label>
+                    <select
+                        style="width:100%;height:46px;padding:0 16px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:#9B6BFF"
+                        ; id="sync-mode">
+                        <option>Авто (5 сек)</option>
+                        <option>Агрессивная (2 сек)</option>
+                        <option>Ручная</option>
+                    </select>
+                </div>
+
                 <div class="modal-actions">
                     <button class="ghost-btn">Создать</button>
                     <button id="save-btn" class="primary-btn">Сохранить</button>

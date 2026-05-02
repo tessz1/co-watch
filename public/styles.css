@@ -201,6 +201,15 @@ button:hover {
     color: #9B6BFF;
 }
 
+select option {
+    background: #1a1a2e;
+    color: #fff;
+}
+
+select option:hover {
+    background: #a855f7;
+}
+
 .online,
 .role,
 .sync {
@@ -611,6 +620,40 @@ button:hover {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
+}
+
+.tab {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 40px;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(255, 255, 255, .06);
+    color: rgba(255, 255, 255, .7);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.tab:hover {
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+}
+
+.tab.active {
+    background: rgba(168, 85, 247, .18);
+    border-color: rgba(168, 85, 247, .3);
+    color: #d8b4ff;
+}
+
+.tab-content {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tab-content.active {
+    display: flex;
 }
 
 /* =====================================================

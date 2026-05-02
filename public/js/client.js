@@ -203,7 +203,7 @@ function formatTime(seconds) {
     if (isNaN(seconds)) return '00:00';
 
     const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
+    const secs = Math.ftentloor(seconds % 60);
 
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
@@ -213,7 +213,7 @@ let isLeader = false;
 socket.on('room-joined', (data) => {
     isLeader = (data.role === 'leader');
     document.getElementById('room-code').textContent = data.roomName;
-    document.getElementById('role').textContent = isLeader ? '👑 Ведущий' : '👀 Зритель';
+    document.getElementById('role').textCon = isLeader ? '👑 Ведущий' : '👀 Зритель';
     document.getElementById('online-users').textContent = data.size
     document.getElementById('roomCode').textContent = data.roomName
     autoSync(isLeader, isPlaying);
@@ -291,6 +291,22 @@ socket.on('sync-time', (data) => {
             "*"
         );
     }
+})
+
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active') })
+        tab.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'))
+
+        if (tab.textContent.trim() === 'Комната') {
+            document.getElementById('tab-room').classList.add('active');
+        } else if (tab.textContent.trim() === 'Видео') {
+            document.getElementById('tab-video').classList.add('active');
+        } else if (tab.textContent.trim() === 'Настройки') {
+            document.getElementById('tab-settings').classList.add('active');
+        }
+    })
 })
 
 socket.on('connect', () => {
