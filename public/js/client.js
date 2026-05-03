@@ -13,7 +13,7 @@ const iframe = document.getElementById('rutube-player');
 
 document.getElementById('playBtn').onclick = async () => {
     clientState.isPlaying = true
-    socket.emit('sync-event', { roomId, type: 'play', time: clientState.currentTime });
+    socket.emit('sync-event', { type: 'play', time: clientState.currentTime });
     autoSync(isLeader, clientState.isPlaying);
 };
 
@@ -56,11 +56,12 @@ document.getElementById('modal-close').onclick = () => {
 
 document.getElementById('stopBtn').onclick = () => {
     clientState.isPlaying = false
-    socket.emit('sync-event', { roomId, type: 'pause', time: clientState.currentTime })
+    socket.emit('sync-event', { type: 'pause', time: clientState.currentTime })
     autoSync(isLeader, clientState.isPlaying)
 };
 document.getElementById('syncBtn').onclick = () => {
-    socket.emit('sync-event', { roomId, type: 'seek', time: clientState.currentTime })
+    socket.emit('sync-event', { type: 'seek', time: clientState.currentTime })
+    console.log(`emit log`)
 }
 
 document.getElementById('chatSend').onclick = () => {
@@ -93,25 +94,24 @@ socket.on('sync-event', (data) => {
     clientState = { videoUrl, currentTime, isPlaying }
     autoSync(isLeader, clientState.isPlaying);
 });
-// document.getElementById('loadVideoBtn').onclick = () => {
-//     let url = document.getElementById('videoUrl').value.trim();
-//     if (!url) return;
-//     const iframe = document.getElementById('rutube-player');
-//     if (url.includes('rutube.ru/video/')) {
-//         const match = url.match(/rutube\.ru\/video\/([a-f0-9]+)/);
-//         if (match && match[1]) {
-//             url = `https://rutube.ru/play/embed/${match[1]}`;
-//         }
-//     }
-//     iframe.src = url;
-//     socket.emit('sync-event', { type: 'load-video', url: url });
-//     timerVideo = 0;
-//     isPlaying = false;
-//     autoSync(isLeader, false);
-// };
+document.getElementById('save-btn').onclick = () => {
+    let url = document.getElementById('modal-link').value.trim();
+    if (!url) return;
+
+    if (url.includes('rutube.ru/video/')) {
+        const match = url.match(/rutube\.ru\/video\/([a-f0-9]+)/);
+        if (match && match[1]) {
+            url = `https://rutube.ru/play/embed/${match[1]}`;
+        }
+    }
+    iframe.src = url;
+    socket.emit('sync-event', { type: 'load-video', url: url });
+    clientState = { currentTime: 0, videoUrl: url, isPlaying: false }
+    autoSync(isLeader, clientState.isPlaying);
+};
 
 
-document.getElementById('save-btn').onclick = async () => {
+document.getElementById('create-room-btn').onclick = async () => {
     await createRoom()
 };
 
@@ -137,6 +137,11 @@ function formatTime(seconds) {
 
 socket.on('room-joined', (data) => {
     isLeader = (data.role === 'leader');
+    clientState = {
+        videoUrl: data.videoUrl,
+        currentTime: data.currentTime,
+        isPlaying: data.isPlaying
+    };
     document.getElementById('room-code').textContent = data.name;
     document.getElementById('role').textContent = isLeader ? '👑 Ведущий' : '👀 Зритель';
     document.getElementById('online-users').textContent = data.size

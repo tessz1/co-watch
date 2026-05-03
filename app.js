@@ -91,36 +91,37 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('sync-event', async (data) => {
+        console.log(data, socket.currentRoom);
+
+        if (!socket.currentRoom) {
+            console.log('NO ROOM');
+            return;
+        }
         if (socket.currentRoom) {
-            const roomID = await prisma.room.findUnique({
-                where: { id: socket.currentRoom },
-            })
+            let updateData = {}
             switch (data.type) {
                 case 'seek':
-                    await prisma.room.update({
-                        where: { id: socket.currentRoom },
-                        data: { currentTime: data.time }
-                    })
+                    updateData = {
+                        currentTime: data.time
+                    }
                     break
                 case 'play':
-                    await prisma.room.update({
-                        where: { id: socket.currentRoom },
-                        data: { isPlaying: true, currentTime: data.time }
-                    })
+                    updateData = { isPlaying: true, currentTime: data.time }
                     break;
                 case 'pause':
-                    await prisma.room.update({
-                        where: { id: socket.currentRoom },
-                        data: { isPlaying: false }
-                    })
+                    updateData = { isPlaying: false }
                     break;
                 case 'load-video':
-                    await prisma.room.update({
-                        where: { id: socket.currentRoom },
-                        data: { videoUrl: data.url, isPlaying: false, currentTime: 0 }
-                    })
+                    updateData = { videoUrl: data.url, isPlaying: false, currentTime: 0 }
                     break;
             }
+            await prisma.room.update({
+                where: { id: socket.currentRoom },
+                data: updateData
+            });
+            const room = await prisma.room.findUnique({
+                where: { id: socket.currentRoom }
+            });
             io.to(socket.currentRoom).emit('sync-event', {
                 type: data.type,
                 ...room
@@ -194,7 +195,8 @@ app.get('/api/room/:id', async (req, res) => {
             where: { id: req.params.id },
         })
         res.json({
-            name: room.name
+            roomId: room.id,
+            name: name
         })
     } catch (e) {
         console.error(`${e} error on get server room ID`)
