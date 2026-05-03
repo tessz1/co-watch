@@ -95,7 +95,6 @@ io.on('connection', (socket) => {
             const roomID = await prisma.room.findUnique({
                 where: { id: socket.currentRoom },
             })
-            console.log(roomID)
             switch (data.type) {
                 case 'seek':
                     await prisma.room.update({
@@ -122,9 +121,10 @@ io.on('connection', (socket) => {
                     })
                     break;
             }
-            io.to(socket.currentRoom).emit('sync-event', await prisma.room.findUnique({
-                where: { id: socket.currentRoom }
-            }));
+            io.to(socket.currentRoom).emit('sync-event', {
+                type: data.type,
+                ...room
+            });
         }
     });
     socket.on('sync-time', (data) => {
@@ -191,9 +191,9 @@ app.post('/api/room', async (req, res) => {
 app.get('/api/room/:id', async (req, res) => {
     try {
         const roomID = await prisma.room.findUnique({
-            where: { id: id },
+            where: { id: req.params.id },
         })
-        req.json({
+        res.json({
             name: room.name
         })
     } catch (e) {
