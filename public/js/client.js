@@ -7,6 +7,8 @@ let clientState = {
     currentTime: 0,
     isPlaying: false
 }
+import createRoom from '../js/server/controllers/room.controllers'
+
 const roomId = window.location.pathname.split('/').pop();
 const statusDiv = document.getElementById('status');
 const iframe = document.getElementById('rutube-player');
@@ -61,7 +63,6 @@ document.getElementById('stopBtn').onclick = () => {
 };
 document.getElementById('syncBtn').onclick = () => {
     socket.emit('sync-event', { type: 'seek', time: clientState.currentTime })
-    console.log(`emit log`)
 }
 
 document.getElementById('chatSend').onclick = () => {
@@ -125,15 +126,6 @@ window.addEventListener("message", function (event) {
     } catch (event) { }
 })
 
-
-function formatTime(seconds) {
-    if (isNaN(seconds)) return '00:00';
-
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-}
 
 socket.on('room-joined', (data) => {
     isLeader = (data.role === 'leader');
@@ -275,3 +267,5 @@ socket.on('connect', () => {
 socket.on('disconnect', () => {
     statusDiv.textContent = 'Отключено';
 });
+
+console.log('playBtn:', document.getElementById('playBtn'));
