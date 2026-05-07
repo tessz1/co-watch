@@ -659,6 +659,8 @@ select option:hover {
 /* =====================================================
    MOBILE
 ===================================================== */
+
+
 @media (max-width: 1180px) {
     .main-layout {
         grid-template-columns: 1fr;
