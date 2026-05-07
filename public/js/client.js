@@ -1,6 +1,6 @@
 
 import { clientState } from "./storage/storage.js";
-import { safePostMessage } from "./helper/savePostMessage.js";
+import { safePostMessage } from "./helper/helper.js";
 import { autoSync, syncInterval, stopSync } from '../js/utils/autoSync.js'
 import { exitRoomUI, updateOnlineUI, joinRoomUI, chatMessageUI, userList } from "./utils/updateUI.js";
 import { bindMenuControls } from './ui/ui.js'

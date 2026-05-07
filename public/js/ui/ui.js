@@ -1,8 +1,6 @@
 import { autoSync } from '../utils/autoSync.js'
 import { createRoom } from '../utils/createRoom.js'
-export const $ = (id) => document.getElementById(id)
-export const $$ = (id) => document.querySelectorAll(id)
-
+import { $, $$ } from '../helper/helper.js'
 export function bindUI(socket, state) {
     bindChatControls(socket)
     bindPlayerControls(socket, state)
