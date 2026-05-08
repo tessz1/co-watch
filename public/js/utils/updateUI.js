@@ -1,4 +1,4 @@
-import { $ } from '../ui/ui.js'
+import { $ } from '../helper/helper.js'
 export function exitRoomUI() {
     $('room-code').textContent = '— — —';
     $('role').textContent = 'Вне комнаты';

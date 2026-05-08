@@ -10,3 +10,4 @@ export function safePostMessage(message) {
 
 export const $ = (id) => document.getElementById(id)
 export const $$ = (id) => document.querySelectorAll(id)
+export const statusDiv = document.getElementById('status');
